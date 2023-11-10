@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class PokemonDetailViewController : UIViewController {
     var pokemon: Card?
@@ -24,10 +25,10 @@ class PokemonDetailViewController : UIViewController {
         
         pokemonDetailView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            pokemonDetailView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pokemonDetailView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            pokemonDetailView.widthAnchor.constraint(equalToConstant: 300),
-            pokemonDetailView.heightAnchor.constraint(equalToConstant: 400)
+            pokemonDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            pokemonDetailView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            pokemonDetailView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            pokemonDetailView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
         
         if let urlString = pokemon?.imageURLHiRes, let url = URL(string: urlString) {
@@ -36,17 +37,15 @@ class PokemonDetailViewController : UIViewController {
     }
     
     func loadImage(from url: URL) {
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: url) { data, response, error in
-            DispatchQueue.main.async {
-                if let data = data, let image = UIImage(data: data) {
-                    self.pokemonDetailView.updateImage(image)
-                    self.pokemonDetailView.updateArtistLabel(with: "Artist: \(self.pokemon?.artist ?? "Unknown")")
-                } else {
-                    self.pokemonDetailView.updateImage(UIImage(named: "notfound.jpg"))
+        SDWebImageManager.shared.loadImage(with: url, options: [], progress: nil) { [weak self] (image, data, error, cacheType, finished, imageURL) in
+                DispatchQueue.main.async {
+                    if let image = image {
+                        self?.pokemonDetailView.updateImage(image)
+                        self?.pokemonDetailView.updateUI(withDataFrom: self!.pokemon!)
+                    } else {
+                        self?.pokemonDetailView.updateImage(UIImage(named: "notfound.jpg"))
+                    }
                 }
             }
-        }
-        task.resume()
     }
 }

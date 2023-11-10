@@ -21,7 +21,7 @@ class PokemonTableViewController: UITableViewController {
     
     private func setupView() {
         view.backgroundColor = .secondarySystemBackground
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellID)
+        tableView.register(PokeyTableViewCell.self, forCellReuseIdentifier: cellID)
         setupNavigationBarView()
     }
     
@@ -59,14 +59,12 @@ extension PokemonTableViewController {
     }
     
  
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
-        cell = UITableViewCell(style: .subtitle, reuseIdentifier: cellID)
-
-        let pokemon = pokey[indexPath.row]
-        cell.textLabel?.text = pokemon.name
-        cell.detailTextLabel?.text = pokemon.supertype
-        cell.accessoryType = .disclosureIndicator
+    override func tableView(_ tableView:UITableView,cellForRowAt indexPath:IndexPath)->UITableViewCell{
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "pokemonCell",for: indexPath) as? PokeyTableViewCell else{
+            return UITableViewCell()
+        }
+        let pokey = pokey[indexPath.row]
+        cell.setupUI(withDataFrom: pokey)
         
         return cell
     }
