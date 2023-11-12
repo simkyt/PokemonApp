@@ -128,7 +128,12 @@ class PokemonDetailView: UIView {
         }
 
         supertypeLabel.text = (withDataFrom.supertype ?? "")
-        subtypeLabel.text = (withDataFrom.subtype ?? "")
+        
+        if let subtype = withDataFrom.subtype, subtype != "" {
+            subtypeLabel.text = (withDataFrom.subtype ?? "")
+        } else {
+            subtypeLabel.isHidden = true
+        }
         
         if let hp = withDataFrom.hp, hp.lowercased() != "none" {
             hpLabel.text = hp + " ❤️"
